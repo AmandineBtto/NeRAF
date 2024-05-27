@@ -1,0 +1,13 @@
+[project]
+name = "NeRAF"
+description = "NeRAF Method."
+version = "0.1.0"
+
+dependencies = ["nerfstudio >= 0.3.0"] 
+
+[tool.setuptools.packages.find]
+include = ["NeRAF*"]
+
+# register the entry point of your new method here:
+[project.entry-points.'nerfstudio.method_configs']
+NeRAF = 'NeRAF.NeRAF_config:NeRAF_method'
