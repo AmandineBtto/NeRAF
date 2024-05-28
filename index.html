@@ -1,0 +1,293 @@
+<script src="http://www.google.com/jsapi" type="text/javascript"></script> 
+<script type="text/javascript">google.load("jquery", "1.3.2");</script>
+
+<html>
+<head>
+    <title>NeRAF: 3D Scene Infused Neural Radiance and Acoustic Fields</title>
+    <meta property="og:image" content="images/teaser.png"/> <!-- Facebook automatically scrapes this. Go to https://developers.facebook.com/tools/debug/ if you update and want to force Facebook to rescrape. -->
+    <meta property="og:title" content="NeRAF: 3D Scene Infused Neural Radiance and Acoustic Fields" />
+    <meta property="og:description" content="NeRAF is a new method that jointly learns acoustic and radiance fields, enabling realistic audio-visual generation." />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- webpage template-->
+    <link rel="stylesheet" href="assets/css/style.css">
+    <!-- model-viewer css -->
+    <link rel="stylesheet" href="assets/css/demo-style.css">
+
+    <link rel="shortcut icon" href="images/logo_institute.png" type="image/x-icon">
+
+</head>
+
+<body>
+    <br>
+    <!-- <center> -->
+    <center>
+        <span style="font-size:38px"> <b>NeRAF: 3D Scene Infused Neural Radiance and Acoustic Fields</b></span>
+    </center>
+    <br>
+    <table align=center width=60%>
+        <tr>
+            <td align=center width=100%>
+                <center>
+                    <span style="font-size:20px"><b>Preprint</b></span>
+                </center>
+            </td>
+        </tr>
+    </table>
+    <br>
+    <table align=center width=80%>
+        <tr>
+            <td align=center width=33%>
+                <center>
+                    <span style="font-size:20px"><a href="https://amandinebtto.github.io/"> <b>Amandine Brunetto</b></a> </span>
+                </center>
+            </td>
+            <td align=center width=33%>
+                <center>
+                    <span style="font-size:20px"><a href=""><b>Sascha Hornauer</b></a> </span>
+                </center>
+            </td>
+            <td align=center width=33%>
+                <center>
+                    <span style="font-size:20px"><a href="https://people.minesparis.psl.eu/fabien.moutarde/"><b>Fabien Moutarde</b></a></span>
+                </center>
+            </td>
+        </tr>
+    </table>
+    <table align=center width=60%>
+        <tr>
+            <td align=center width=100%>
+                <center>
+                    <span style="font-size:20px"> Centre for Robotics, Mines Paris - PSL Research University </span>
+                </center>
+            </td>
+        </tr>
+    </table>
+    <br>
+    <br>
+    <table align=center width=80%>
+        <tr>
+            <!--
+            <td align=center width=20%>
+                <center>
+                    <span style="font-size:20px"><a href="">[Paper]</a></span>
+                </center>
+            </td>
+            -->
+            <td align=center width=50%>
+                <center>
+                    <span style="font-size:20px"><a href="">[ArXiv]</a></span>
+                </center>
+            </td>
+            <td align=center width=50%>
+                <center>
+                    <span style="font-size:20px"><a href="https://github.com/AmandineBtto/NeRAF">[Code]</a></span>
+                </center>
+            </td>
+        </tr>
+    </table>
+
+    <br>
+
+    <table align=center width=80%>
+        <tr>
+            <td width=100%>
+                <center>
+                    <br>
+                    <img src="images/concept_v1.svg" width="80%"></img><br>
+                </center>
+            </td>
+        </tr>
+        <tr>
+        <td width=95%>
+            <center>
+                <br>
+                <span style="font-size:14px"><i>  NeRAF learns radiance and acoustic fields from a set of images and audio recordings. 
+                    It synthesizes binaural RIRs and RGB images at novel camera, microphone and source positions and orientations. 
+                    NeRAF benefits from cross-modal training without requiring co-located audio-visual data and can render spatially separate modalities. 
+                    NeRAF enables auralization and audio spatialization, along with enhanced image rendering, which are essential for creating a realistic perception of space. </i>
+            </center>
+        </td>
+        </tr>
+    </table>
+    <br>
+    <hr>
+
+    <table align=center width=80%>
+        <center><h1>Abstract</h1></center>
+        <tr>
+            <td width=95%>
+                <center>
+                    <span style="font-size:14px">Sound plays a major role in human perception, providing essential scene information alongside vision for understanding our environment. 
+                        Despite progress in neural implicit representations, learning acoustics that match a visual scene is still challenging. We propose NeRAF, a method that jointly learns acoustic and radiance fields. 
+                        NeRAF is designed as a Nerfstudio module for convenient access to realistic audio-visual generation. 
+                        It synthesizes both novel views and spatialized audio at new positions, leveraging radiance field capabilities to condition the acoustic field with 3D scene information. 
+                        At inference, each modality can be rendered independently and at spatially separated positions, providing greater versatility. 
+                        We demonstrate the advantages of our method on the SoundSpaces dataset. 
+                        NeRAF achieves substantial performance improvements over previous works while being more data-efficient. 
+                        Furthermore, NeRAF enhances novel view synthesis of complex scenes trained with sparse data through cross-modal learning.
+                </center>
+            </td>
+        </tr>
+    </table>
+    <br><br>
+    <hr>
+
+
+    <table align=center width=90%>
+        <center>
+            <h1>Model Overview</h1>
+        </center>
+        <tr>
+            <td width=100%>
+                <center>
+                    <img src="images/pipeline_Font.svg" width="80%"></img><br>
+                </center>
+            </td>
+        </tr>
+        <tr>
+            <td width=95%>
+                <center>
+                    <br>
+                    <span style="font-size:14px"> NeRF maps 3D coordinates and orientations to density and color. 
+                        The grid sampler fills a 3D grid representing the scene by querying the radiance field with voxel center coordinates and multiple viewing directions. 
+                        NAcF learns to map source-microphone poses and directions to STFT coefficients. 
+                        It is conditioned by extracted scene features. Predicted RIRs can be convolved with audio to obtain auralized and spatialized sound matching the scene. </span>
+                </center>
+            </td>
+        </tr>
+    </table>
+    <br><br>
+    <hr>
+
+    <table align=center width=90%>
+        <center>
+            <h1>Demo Videos</h1>
+        </center>
+
+        <tr>
+            <td width="100%">
+                <center>
+                    <span style="font-size: 14px;"> We present exemples of audio-visual and audio-only generation done with NeRAF. </span>
+                    <br>
+                    <span style="font-size: 14px;">
+                        Each video includes a mini-map displaying the position of the <span style="color:blue"> sound source </span> (blue cross) and <span style="color:green"> microphone+camera trajectory </span> (green arrow). 
+                        Audios are obtained by convolving the predicted RIRs with the source audio. To best experience the videos, please use headphones.
+                    </span>
+                    <br>
+                    <span style="font-size: 14px;">
+                        These examples illustrate the ability of NeRAF to render realistic audio-visual scenes.
+                        In particular, NeRAF allows:
+                        <ul>
+                            <li>Audio and image synthesis at novel camera and microphone positions.</li>
+                            <li>The possibility to render each modality independently.</li>
+                            <li>Generation of auralized, spatialized (orientation-aware) and distance-aware audios.</li>
+                            <li>Enhanced image synthesis on complex scenes with sparse data through cross-modal learning.</li>
+                        </ul>
+                    </span>
+                </center>
+            </td>
+        </tr>   
+    </table>
+    <br><br>
+
+    <table align=center width=90%>
+        <tr>
+        <center>
+            <h3> Audio-Visual Generation </h3>
+        </center>
+        </tr>
+
+        <tr>
+            <td width="33%">
+                <div class="column" float="center" width="30%">
+                    <video id='videos/frl2_228' controls height='300' >
+                        <source src="./videos/out_FRL2_228_fullReinh.mp4" type="video/mp4" preload="none">
+                    </video>
+                </div>
+            </td>
+            
+            <td  width="33%">
+                <div class="column" float="center" width="30%">
+                    <video id='videos/appt2_164' controls height='300' >
+                        <source src="./videos/out_appt2_S164_4sea.mp4" type="video/mp4" preload="none">
+                    </video>
+                </div>
+            </td>
+            
+            <td width="33%">
+                <div class="column" float="center" width="30%">
+                    <video id='videos/office4_70' controls height='300' >
+                        <source src="./videos/out_office4_S70_Speech.mp4" type="video/mp4" preload="none">
+                    </video>
+                </div>
+            </td>
+            
+        </tr>
+    </table>
+    <br><br>
+
+    <table align=center width=90%>
+        <tr>
+        <center>
+            <h3> Audio-Only Generation </h3>
+        </center>
+        </tr>
+
+        <tr>
+            <td width=80%>
+                <div class="row" align="center" width="100%">
+                    <div class="column" float="center">
+                        <video id='videos/appt1_79' controls height='300' >
+                            <source src="./videos/out_apt1_S79_DMAT.mp4" type="video/mp4" preload="none">
+                        </video>
+                    </div>
+                </div>  
+            </td>
+        </tr>   
+    </table>
+    <br><br>
+    <hr>
+
+    <table align=center width=60%>
+        <center><h1>Paper</h1></center>
+        <tr>
+            <td><a href=""><img class="layered-paper-big" style="height:175px" src="./images/NeRAF_Preprint_png.png"/></a></td>
+            <td><span style="font-size:14pt">Amandine Brunetto, Sascha Hornauer, Fabien Moutarde.<br>
+                <b>NeRAF: 3D Scene Infused Neural Radiance and Acoustic Fields.</b><br>
+                (hosted on <a href="#">ArXiv</a>)<br> 
+                <span style="font-size:4pt"><a href=""><br></a>
+                </span>
+            </td>
+        </tr>
+    </table>
+    <br>
+
+    <table align=center width=60%>
+        <tr>
+            <td><span style="font-size:14pt"><center>
+                <a href="./docs/bibtex.txt">[Bibtex]</a>
+            </center></td>
+        </tr>
+    </table>
+
+    <hr>
+    <br>
+
+    <table align=center width=80%>
+        <tr>
+            <td width=80%>
+                <left>
+                    <center><h1>Acknowledgements</h1></center>
+                    The authors acknowledges the support of the French
+                    Agence Nationale de la Recherche (ANR), under grant ANR22-CE94-0003.
+                    The webpage template was originally made by <a href="http://web.mit.edu/phillipi/">Phillip Isola</a> and <a href="http://richzhang.github.io/">Richard Zhang</a> for a <a href="http://richzhang.github.io/colorization/">Colorization</a> project. 
+                </left>
+            </td>
+        </tr>
+    </table>
+
+<br>
+</body>
+</html>
+

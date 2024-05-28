@@ -1,0 +1,6 @@
+@article{NeRAF,
+  author={Brunetto, Amandine and Hornauer, Sascha and Moutarde, Fabien},
+  title={NeRAF: 3D Scene Infused Neural Radiance and Acoustic Fields.}, 
+  year={2024},
+  journal={arXiv preprint},
+}
