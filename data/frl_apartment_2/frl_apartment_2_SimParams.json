@@ -1,0 +1,33 @@
+{
+    "path": "/data/sound-spaces/data/scene_datasets/replica",
+    "scene_id": "frl_apartment_2",
+    "scene": "/data/sound-spaces/data/scene_datasets/replica/frl_apartment_2/habitat/mesh_semantic.ply",
+    "scene_dataset": "/data/sound-spaces/data/scene_datasets/replica/frl_apartment_2/habitat/replica_stage.stage_config.json",
+    "navmesh": "/data/sound-spaces/data/scene_datasets/replica/frl_apartment_2/habitat/mesh_semantic.navmesh",
+    "material_config": "/data/sound-spaces/data/mp3d_material_config.json",
+    "default_agent": 0,
+    "sensor_height": 1.5,
+    "width": 512,
+    "height": 512,
+    "hfov": 90,
+    "vfov": 90,
+    "near": 0.009999999776482582,
+    "far": 1000.0,
+    "aspect ratio": 1.0,
+    "fx": 1.0,
+    "fy": 1.0,
+    "fx px": 256.0,
+    "fy px": 256.0,
+    "boundaries_mesh": [
+        [
+            -3.5717356204986572,
+            -1.4815583229064941,
+            -6.051211833953857
+        ],
+        [
+            9.355510711669922,
+            3.2686872482299805,
+            1.301871657371521
+        ]
+    ]
+}

@@ -1,0 +1,33 @@
+{
+    "path": "/data/sound-spaces/data/scene_datasets/replica",
+    "scene_id": "office_4",
+    "scene": "/data/sound-spaces/data/scene_datasets/replica/office_4/habitat/mesh_semantic.ply",
+    "scene_dataset": "/data/sound-spaces/data/scene_datasets/replica/office_4/habitat/replica_stage.stage_config.json",
+    "navmesh": "/data/sound-spaces/data/scene_datasets/replica/office_4/habitat/mesh_semantic.navmesh",
+    "material_config": "/data/sound-spaces/data/mp3d_material_config.json",
+    "default_agent": 0,
+    "sensor_height": 1.5,
+    "width": 512,
+    "height": 512,
+    "hfov": 90,
+    "vfov": 90,
+    "near": 0.009999999776482582,
+    "far": 1000.0,
+    "aspect ratio": 1.0,
+    "fx": 1.0,
+    "fy": 1.0,
+    "fx px": 256.0,
+    "fy px": 256.0,
+    "boundaries_mesh": [
+        [
+            -1.2046505212783813,
+            -1.209289312362671,
+            -4.179439544677734
+        ],
+        [
+            5.341502666473389,
+            3.20782470703125,
+            2.325756549835205
+        ]
+    ]
+}
