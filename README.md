@@ -2,6 +2,8 @@
 This repository is the official implementation of NeRAF: 3D Scene Infused Neural Radiance and Acoustic Field.
 NeRAF is a novel method that learns neural radiance and acoustic field. 
 
+## <span style="color:blue">  WARNING: NeRAF is ongoing some changes, an update of the paper and code is planned very soon.</span>
+
 [Paper](https://arxiv.org/abs/2405.18213) | [Project Page](https://amandinebtto.github.io/NeRAF)
 
 The code is written in Python and uses the NerfStudio framework.
