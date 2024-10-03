@@ -1,293 +1,392 @@
-<script src="http://www.google.com/jsapi" type="text/javascript"></script> 
-<script type="text/javascript">google.load("jquery", "1.3.2");</script>
-
+<!DOCTYPE html>
 <html>
 <head>
-    <title>NeRAF: 3D Scene Infused Neural Radiance and Acoustic Fields</title>
-    <meta property="og:image" content="images/teaser.png"/> <!-- Facebook automatically scrapes this. Go to https://developers.facebook.com/tools/debug/ if you update and want to force Facebook to rescrape. -->
-    <meta property="og:title" content="NeRAF: 3D Scene Infused Neural Radiance and Acoustic Fields" />
-    <meta property="og:description" content="NeRAF is a new method that jointly learns acoustic and radiance fields, enabling realistic audio-visual generation." />
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="utf-8">
+  <!-- Meta tags for social media banners, these should be filled in appropriatly as they are your "business card" -->
+  <!-- Replace the content tag with appropriate information -->
+  <meta name="description" content="DESCRIPTION META TAG">
+  <meta property="og:title" content="SOCIAL MEDIA TITLE TAG"/>
+  <meta property="og:description" content="SOCIAL MEDIA DESCRIPTION TAG TAG"/>
+  <meta property="og:url" content="URL OF THE WEBSITE"/>
+  <!-- Path to banner image, should be in the path listed below. Optimal dimenssions are 1200X630-->
+  <meta property="og:image" content="static/image/your_banner_image.png" />
+  <meta property="og:image:width" content="1200"/>
+  <meta property="og:image:height" content="630"/>
 
-    <!-- webpage template-->
-    <link rel="stylesheet" href="assets/css/style.css">
-    <!-- model-viewer css -->
-    <link rel="stylesheet" href="assets/css/demo-style.css">
 
-    <link rel="shortcut icon" href="images/logo_institute.png" type="image/x-icon">
+  <meta name="twitter:title" content="TWITTER BANNER TITLE META TAG">
+  <meta name="twitter:description" content="TWITTER BANNER DESCRIPTION META TAG">
+  <!-- Path to banner image, should be in the path listed below. Optimal dimenssions are 1200X600-->
+  <meta name="twitter:image" content="static/images/your_twitter_banner_image.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <!-- Keywords for your paper to be indexed by-->
+  <meta name="keywords" content="KEYWORDS SHOULD BE PLACED HERE">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
 
+
+  <title>NeRAF </title>
+  <link rel="icon" type="image/x-icon" href="static/images/favicon.ico">
+  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro"
+  rel="stylesheet">
+
+  <link rel="stylesheet" href="static/css/bulma.min.css">
+  <link rel="stylesheet" href="static/css/bulma-carousel.min.css">
+  <link rel="stylesheet" href="static/css/bulma-slider.min.css">
+  <link rel="stylesheet" href="static/css/fontawesome.all.min.css">
+  <link rel="stylesheet"
+  href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+  <link rel="stylesheet" href="static/css/index.css">
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://documentcloud.adobe.com/view-sdk/main.js"></script>
+  <script defer src="static/js/fontawesome.all.min.js"></script>
+  <script src="static/js/bulma-carousel.min.js"></script>
+  <script src="static/js/bulma-slider.min.js"></script>
+  <script src="static/js/index.js"></script>
 </head>
-
 <body>
-    <br>
-    <!-- <center> -->
-    <center>
-        <span style="font-size:38px"> <b>NeRAF: 3D Scene Infused Neural Radiance and Acoustic Fields</b></span>
-    </center>
-    <br>
-    <table align=center width=60%>
-        <tr>
-            <td align=center width=100%>
-                <center>
-                    <span style="font-size:20px"><b>Preprint</b></span>
-                </center>
-            </td>
-        </tr>
-    </table>
-    <br>
-    <table align=center width=80%>
-        <tr>
-            <td align=center width=33%>
-                <center>
-                    <span style="font-size:20px"><a href="https://amandinebtto.github.io/"> <b>Amandine Brunetto</b></a> </span>
-                </center>
-            </td>
-            <td align=center width=33%>
-                <center>
-                    <span style="font-size:20px"><a href=""><b>Sascha Hornauer</b></a> </span>
-                </center>
-            </td>
-            <td align=center width=33%>
-                <center>
-                    <span style="font-size:20px"><a href="https://people.minesparis.psl.eu/fabien.moutarde/"><b>Fabien Moutarde</b></a></span>
-                </center>
-            </td>
-        </tr>
-    </table>
-    <table align=center width=60%>
-        <tr>
-            <td align=center width=100%>
-                <center>
-                    <span style="font-size:20px"> Centre for Robotics, Mines Paris - PSL Research University </span>
-                </center>
-            </td>
-        </tr>
-    </table>
-    <br>
-    <br>
-    <table align=center width=80%>
-        <tr>
-            <!--
-            <td align=center width=20%>
-                <center>
-                    <span style="font-size:20px"><a href="">[Paper]</a></span>
-                </center>
-            </td>
-            -->
-            <td align=center width=50%>
-                <center>
-                    <span style="font-size:20px"><a href="https://arxiv.org/abs/2405.18213">[ArXiv]</a></span>
-                </center>
-            </td>
-            <td align=center width=50%>
-                <center>
-                    <span style="font-size:20px"><a href="https://github.com/AmandineBtto/NeRAF">[Code]</a></span>
-                </center>
-            </td>
-        </tr>
-    </table>
-
-    <br>
-
-    <table align=center width=80%>
-        <tr>
-            <td width=100%>
-                <center>
-                    <br>
-                    <img src="images/concept_v1.svg" width="80%"></img><br>
-                </center>
-            </td>
-        </tr>
-        <tr>
-        <td width=95%>
-            <center>
-                <br>
-                <span style="font-size:14px"><i>  NeRAF learns radiance and acoustic fields from a set of images and audio recordings. 
-                    It synthesizes binaural RIRs and RGB images at novel camera, microphone and source positions and orientations. 
-                    NeRAF benefits from cross-modal training without requiring co-located audio-visual data and can render spatially separate modalities. 
-                    NeRAF enables auralization and audio spatialization, along with enhanced image rendering, which are essential for creating a realistic perception of space. </i>
-            </center>
-        </td>
-        </tr>
-    </table>
-    <br>
-    <hr>
-
-    <table align=center width=80%>
-        <center><h1>Abstract</h1></center>
-        <tr>
-            <td width=95%>
-                <center>
-                    <span style="font-size:14px">Sound plays a major role in human perception, providing essential scene information alongside vision for understanding our environment. 
-                        Despite progress in neural implicit representations, learning acoustics that match a visual scene is still challenging. We propose NeRAF, a method that jointly learns acoustic and radiance fields. 
-                        NeRAF is designed as a Nerfstudio module for convenient access to realistic audio-visual generation. 
-                        It synthesizes both novel views and spatialized audio at new positions, leveraging radiance field capabilities to condition the acoustic field with 3D scene information. 
-                        At inference, each modality can be rendered independently and at spatially separated positions, providing greater versatility. 
-                        We demonstrate the advantages of our method on the SoundSpaces dataset. 
-                        NeRAF achieves substantial performance improvements over previous works while being more data-efficient. 
-                        Furthermore, NeRAF enhances novel view synthesis of complex scenes trained with sparse data through cross-modal learning.
-                </center>
-            </td>
-        </tr>
-    </table>
-    <br><br>
-    <hr>
 
 
-    <table align=center width=90%>
-        <center>
-            <h1>Model Overview</h1>
-        </center>
-        <tr>
-            <td width=100%>
-                <center>
-                    <img src="images/pipeline_Font.svg" width="80%"></img><br>
-                </center>
-            </td>
-        </tr>
-        <tr>
-            <td width=95%>
-                <center>
-                    <br>
-                    <span style="font-size:14px"> NeRF maps 3D coordinates and orientations to density and color. 
-                        The grid sampler fills a 3D grid representing the scene by querying the radiance field with voxel center coordinates and multiple viewing directions. 
-                        NAcF learns to map source-microphone poses and directions to STFT coefficients. 
-                        It is conditioned by extracted scene features. Predicted RIRs can be convolved with audio to obtain auralized and spatialized sound matching the scene. </span>
-                </center>
-            </td>
-        </tr>
-    </table>
-    <br><br>
-    <hr>
+  <section class="hero">
+    <div class="hero-body">
+      <div class="container is-max-desktop">
+        <div class="columns is-centered">
+          <div class="column has-text-centered">
+            <h1 class="title is-1 publication-title">NeRAF: 3D Scene Infused Neural Radiance and Acoustic Fields</h1>
+            <div class="is-size-5 publication-authors">
+              <!-- Paper authors -->
+              <span class="author-block">
+                <a href="https://amandinebtto.github.io/" target="_blank">Amandine Brunetto</a>,</span>
+                <span class="author-block">
+                  <a href="#" target="_blank">Sascha Hornauer</a>,</span>
+                  <span class="author-block">
+                    <a href="https://people.minesparis.psl.eu/fabien.moutarde/" target="_blank">Fabien Moutarde</a>
+                  </span>
+                  </div>
 
-    <table align=center width=90%>
-        <center>
-            <h1>Demo Videos</h1>
-        </center>
+                  <div class="is-size-5 publication-authors">
+                    <span class="author-block">Mines Paris, PSL Research University </span>
+                    <!-- <span class="eql-cntrb"><small><br><sup>*</sup>Indicates Equal Contribution</small></span>-->
+                  </div>
 
-        <tr>
-            <td width="100%">
-                <center>
-                    <span style="font-size: 14px;"> We present exemples of audio-visual and audio-only generation done with NeRAF. </span>
-                    <br>
-                    <span style="font-size: 14px;">
-                        Each video includes a mini-map displaying the position of the <span style="color:blue"> sound source </span> (blue cross) and <span style="color:green"> microphone+camera trajectory </span> (green arrow). 
-                        Audios are obtained by convolving the predicted RIRs with the source audio. To best experience the videos, please use headphones.
+                  <div class="column has-text-centered">
+                    <div class="publication-links">
+                         <!-- Arxiv PDF link -->
+                      <span class="link-block">
+                        <a href="https://arxiv.org/abs/2405.18213" target="_blank"
+                        class="external-link button is-normal is-rounded is-dark">
+                        <span class="icon">
+                          <i class="fas fa-file-pdf"></i>
+                        </span>
+                        <span>ArXiv</span>
+                      </a>
                     </span>
-                    <br>
-                    <span style="font-size: 14px;">
-                        These examples illustrate the ability of NeRAF to render realistic audio-visual scenes.
-                        In particular, NeRAF allows:
-                        <ul>
-                            <li>Audio and image synthesis at novel camera and microphone positions.</li>
-                            <li>The possibility to render each modality independently.</li>
-                            <li>Generation of auralized, spatialized (orientation-aware) and distance-aware audios.</li>
-                            <li>Enhanced image synthesis on complex scenes with sparse data through cross-modal learning.</li>
-                        </ul>
+
+                    <!-- Supplementary PDF link -->
+                    <!-- <span class="link-block">
+                      <a href="static/pdfs/supplementary_material.pdf" target="_blank"
+                      class="external-link button is-normal is-rounded is-dark">
+                      <span class="icon">
+                        <i class="fas fa-file-pdf"></i>
+                      </span>
+                      <span>Supplementary</span>
+                    </a>
+                  </span> -->
+
+                  <!-- Github link -->
+                  <span class="link-block">
+                    <a href="https://github.com/AmandineBtto/NeRAF" target="_blank"
+                    class="external-link button is-normal is-rounded is-dark">
+                    <span class="icon">
+                      <i class="fab fa-github"></i>
                     </span>
-                </center>
-            </td>
-        </tr>   
-    </table>
-    <br><br>
-
-    <table align=center width=90%>
-        <tr>
-        <center>
-            <h3> Audio-Visual Generation </h3>
-        </center>
-        </tr>
-
-        <tr>
-            <td width="33%">
-                <div class="column" float="center" width="30%">
-                    <video id='videos/frl2_228' controls height='300' >
-                        <source src="./videos/out_FRL2_228_fullReinh.mp4" type="video/mp4" preload="none">
-                    </video>
-                </div>
-            </td>
-            
-            <td  width="33%">
-                <div class="column" float="center" width="30%">
-                    <video id='videos/appt2_164' controls height='300' >
-                        <source src="./videos/out_appt2_S164_4sea.mp4" type="video/mp4" preload="none">
-                    </video>
-                </div>
-            </td>
-            
-            <td width="33%">
-                <div class="column" float="center" width="30%">
-                    <video id='videos/office4_70' controls height='300' >
-                        <source src="./videos/out_office4_S70_Speech.mp4" type="video/mp4" preload="none">
-                    </video>
-                </div>
-            </td>
-            
-        </tr>
-    </table>
-    <br><br>
-
-    <table align=center width=90%>
-        <tr>
-        <center>
-            <h3> Audio-Only Generation </h3>
-        </center>
-        </tr>
-
-        <tr>
-            <td width=80%>
-                <div class="row" align="center" width="100%">
-                    <div class="column" float="center">
-                        <video id='videos/appt1_79' controls height='300' >
-                            <source src="./videos/out_apt1_S79_DMAT.mp4" type="video/mp4" preload="none">
-                        </video>
-                    </div>
-                </div>  
-            </td>
-        </tr>   
-    </table>
-    <br><br>
-    <hr>
-
-    <table align=center width=60%>
-        <center><h1>Paper</h1></center>
-        <tr>
-            <td><a href=""><img class="layered-paper-big" style="height:175px" src="./images/NeRAF_Preprint_png.png"/></a></td>
-            <td><span style="font-size:14pt">Amandine Brunetto, Sascha Hornauer, Fabien Moutarde.<br>
-                <b>NeRAF: 3D Scene Infused Neural Radiance and Acoustic Fields.</b><br>
-                (hosted on <a href="https://arxiv.org/abs/2405.18213">ArXiv</a>)<br> 
-                <span style="font-size:4pt"><a href=""><br></a>
+                    <span>Code</span>
+                  </a>
                 </span>
-            </td>
-        </tr>
-    </table>
-    <br>
 
-    <table align=center width=60%>
-        <tr>
-            <td><span style="font-size:14pt"><center>
-                <a href="./docs/bibtex.txt">[Bibtex]</a>
-            </center></td>
-        </tr>
-    </table>
+                <!-- ArXiv abstract Link -->
+                <!--
+                <span class="link-block">
+                  <a href="https://arxiv.org/abs/<ARXIV PAPER ID>" target="_blank"
+                  class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                    <i class="ai ai-arxiv"></i>
+                  </span>
+                  <span>arXiv</span> 
+                -->
+                </a>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
 
-    <hr>
-    <br>
 
-    <table align=center width=80%>
-        <tr>
-            <td width=80%>
-                <left>
-                    <center><h1>Acknowledgements</h1></center>
-                    The authors acknowledges the support of the French
-                    Agence Nationale de la Recherche (ANR), under grant ANR22-CE94-0003.
-                    The webpage template was originally made by <a href="http://web.mit.edu/phillipi/">Phillip Isola</a> and <a href="http://richzhang.github.io/">Richard Zhang</a> for a <a href="http://richzhang.github.io/colorization/">Colorization</a> project. 
-                </left>
-            </td>
-        </tr>
-    </table>
+<!-- Teaser video-->
+<!-- 
+<section class="hero teaser">
+  <div class="container is-max-desktop">
+    <div class="hero-body">
+      <video poster="" id="tree" autoplay controls muted loop height="100%">
+        <source src="static/videos/banner_video.mp4"
+        type="video/mp4">
+      </video>
+      <h2 class="subtitle has-text-centered">
+        Aliquam vitae elit ullamcorper tellus egestas pellentesque. Ut lacus tellus, maximus vel lectus at, placerat pretium mi. Maecenas dignissim tincidunt vestibulum. Sed consequat hendrerit nisl ut maximus. 
+      </h2>
+    </div>
+  </div>
+</section> 
+-->
+<!-- End teaser video -->
 
+<!-- Teaser image -->
+<section class="hero teaser">
+  <div class="container is-max-desktop">
+    <div class="hero-body is-centered has-text-centered">
+      <img style="width: 70%;" src="static/images/concept.svg" alt="NERAFConcept"/>
+      <h2 style="font-size: 1em" class="subtitle has-text-centered ">
+        NeRAF synthesizes audio-visual data at novel sensor positions by learning radiance and acoustic fields from a collection of images and audio recordings. 
+        It enables audio auralization and spatialization, as well as improved image rendering, all of which are crucial for creating a realistic perception of space. 
+        NeRAF leverages cross-modal learning without the need for co-located audio and visual sensors for training. 
+        Our method allows for the independent rendering of each modality.
+      </h2>
+    </div>
+  </div>
+
+<!-- Paper abstract -->
+<section class="section hero is-light">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3">Abstract</h2>
+        <div class="content has-text-justified">
+          <p>
+            Sound plays a major role in human perception. 
+            Along with vision, it provides essential information for understanding our surroundings. 
+            Despite advances in neural implicit representations, learning acoustics that align with visual scenes remains a challenge. 
+            We propose NeRAF, a method that jointly learns acoustic and radiance fields.
+            NeRAF synthesizes both novel views and spatialized room impulse responses (RIR) at new positions by conditioning the acoustic field on 3D scene geometric and appearance priors from the radiance field. 
+            The generated RIR can be applied to auralize any audio signal. Each modality can be rendered independently and at spatially distinct positions, offering greater versatility. 
+            We demonstrate that NeRAF generates high-quality audio on SoundSpaces and RAF datasets, achieving significant performance improvements over prior methods while being more data- efficient. 
+            Additionally, NeRAF enhances novel view synthesis of complex scenes trained with sparse data through cross-modal learning. NeRAF is designed as a Nerfstudio module, providing convenient access to realistic audio-visual generation.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- End paper abstract -->
+
+
+<!-- Image carousel -->
+ <!--
+<section class="hero is-small">
+  <div class="hero-body">
+    <div class="container">
+      <div id="results-carousel" class="carousel results-carousel">
+       <div class="item">
+        <img src="static/images/carousel1.jpg" alt="MY ALT TEXT"/>
+        <h2 class="subtitle has-text-centered">
+          First image description.
+        </h2>
+      </div>
+      <div class="item">
+        <img src="static/images/carousel2.jpg" alt="MY ALT TEXT"/>
+        <h2 class="subtitle has-text-centered">
+          Second image description.
+        </h2>
+      </div>
+      <div class="item">
+        <img src="static/images/carousel3.jpg" alt="MY ALT TEXT"/>
+        <h2 class="subtitle has-text-centered">
+         Third image description.
+       </h2>
+     </div>
+     <div class="item">
+      <img src="static/images/carousel4.jpg" alt="MY ALT TEXT"/>
+      <h2 class="subtitle has-text-centered">
+        Fourth image description.
+      </h2>
+    </div>
+  </div>
+</div>
+</div>
+</section>-->
+<!-- End image carousel -->
+
+<section class="section">
+  <div class="container is-max-desktop content">
+      <h2 class="title is-3">NeRAF overview</h2>
+      <div class="columns is-centered has-text-centered">
+        <div class="column is-four-fifths">
+          <img src="static/images/overview.svg" alt="Model Overview"/>
+          <br><br>
+        </div>
+      </div>
+      <div class="columns is-centered has-text-centered">
+      NeRF maps 3D coordinates and orientations to density and color. The grid sampler fills a 3D grid representing the scene by querying the radiance field with voxel center coordinates and multiple viewing directions. NAcF learns to map source-microphone poses and directions to STFT. It is conditioned by extracted scene features. Predicted RIRs can be convolved with audio to obtain auralized and spatialized audio matching the scene.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Youtube video -->
+<!-- <section class="hero is-small is-light">
+  <div class="hero-body">
+    <div class="container">
+      <h2 class="title is-3">Video Presentation</h2>
+      <div class="columns is-centered has-text-centered">
+        <div class="column is-four-fifths">
+          
+          <div class="publication-video">
+            <iframe src="https://www.youtube.com/embed/JkaxUblCGz0" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section> -->
+<!-- End youtube video -->
+
+
+<!-- Video carousel -->
+<section class="">
+  <div class="container is-max-desktop content">
+    <div class="container">
+      <h2 class="title is-3">Videos</h2>
+      <div class="container has-text-centered is-centered">
+        We present examples of audio-visual and audio-only generation (last video) done with NeRAF.<br>
+        Audios are obtained by convolving the predicted RIRs with the source audio. To best experience the videos, please use headphones.
+
+        <!-- Each video includes a mini-map displaying the position of the <span style="color: darkblue;">sound source</span> (blue cross) and <span style="color: darkgreen;">microphone+camera trajectory</span> (green arrow). -->
+        
+        <!-- These examples illustrate the ability of NeRAF to render realistic audio-visual scenes.  In particular, NeRAF allows: 
+         <ul style="list-style-position:inside">
+          <li>Audio and image synthesis at novel camera and microphone positions.</li>
+          <li>The possibility to render each modality independently.</li>
+          <li>Generation of auralized, spatialized (orientation-aware) and distance-aware audios.</li>
+          <li>Enhanced image synthesis on complex scenes with sparse data through cross-modal learning.</li>
+        </ul> -->
+      </div>
+      <div id="results-carousel" class="carousel results-carousel container has-text-centered">
+        <div class="item item-video1">
+          <video poster="" id="video1" controls muted loop height="100%">
+            <!-- Your video file here -->
+            <source src="static/videos/Furnished_Video_s16.mp4"
+            type="video/mp4">
+          </video>
+        </div>
+
+        <div class="item item-video2">
+          <video poster="" id="video2" controls muted loop height="100%">
+            <!-- Your video file here -->
+            <source src="static/videos/empty_video_s0_bechet.mp4"
+            type="video/mp4">
+          </video>
+        </div>
+
+        <div class="item item-video3">
+          <video poster="" id="video3" controls muted loop height="100%">\
+            <!-- Your video file here -->
+            <source src="static/videos/out_apt2_S164_4Seas.mp4"
+            type="video/mp4">
+          </video>
+        </div>
+
+        <div class="item item-video4">
+          <video poster="" id="video4" controls muted loop height="100%">\
+            <!-- Your video file here -->
+            <source src="static/videos/out_frl2_S228_Reihnardt.mp4"
+            type="video/mp4">
+          </video>
+        </div>
+
+        <div class="item item-video5">
+          <video poster="" id="video5" controls muted loop height="100%">\
+            <!-- Your video file here -->
+            <source src="static/videos/out_office4_S70_Speech.mp4"
+            type="video/mp4">
+          </video>
+        </div>
+
+        <div class="item item-video6">
+          <video poster="" id="video6" controls muted loop height="100%">\
+            <!-- Your video file here -->
+            <source src="static/videos/out_apt1_S79_DMAT.mp4"
+            type="video/mp4">
+          </video>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
 <br>
-</body>
-</html>
+<!-- End video carousel -->
 
+
+
+
+
+
+<!-- Paper poster -->
+<!-- <section class="hero is-small is-light">
+  <div class="hero-body">
+    <div class="container">
+      <h2 class="title">Poster</h2>
+
+      <iframe  src="static/pdfs/sample.pdf" width="100%" height="550">
+          </iframe>
+        
+      </div>
+    </div>
+  </section> -->
+<!--End paper poster -->
+
+
+<!--BibTex citation -->
+  <section class="section" id="BibTeX">
+    <div class="container is-max-desktop content">
+      <h2 class="title">BibTeX</h2>
+      <pre><code class="c0py">@article{NeRAF,
+        title={NeRAF: 3D Scene Infused Neural Radiance and Acoustic Fields}, 
+        author={Amandine Brunetto and Sascha Hornauer and Fabien Moutarde},
+        year={2024},
+        eprint={2405.18213},
+        archivePrefix={arXiv},
+  }</code></pre>
+    </div>
+</section>
+<script src="https://cdn.jsdelivr.net/gh/Djongov/cClipboard@v2.1/cClipboard.min.js"></script>
+<!--End BibTex citation -->
+
+  <footer class="footer">
+  <div class="container">
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-8">
+        <div class="content">
+
+          <p>
+            The authors acknowledges the support of the French Agence Nationale de la Recherche (ANR), under grant ANR22-CE94-0003 and was performed using HPC resources from GENCI–IDRIS (Grant 2024-103789).
+            This page was built using the <a href="https://github.com/eliahuhorwitz/Academic-project-page-template" target="_blank">Academic Project Page Template</a>.
+          </p>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+
+<!-- Statcounter tracking code -->
+  
+<!-- You can add a tracker to track page visits by creating an account at statcounter.com -->
+
+    <!-- End of Statcounter Code -->
+
+  </body>
+  </html>
