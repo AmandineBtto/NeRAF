@@ -114,7 +114,7 @@ class Bottleneck(nn.Module):
 
 
 class ResNet3D(nn.Module):
-    def __init__(self, in_channels, block, layers, grid_step=None):
+    def __init__(self, in_channels, block, layers, grid_step=None, N_features=1024):
         self.in_planes = 64
         super(ResNet3D, self).__init__()
         self.conv1 = nn.Conv3d(in_channels, 64, kernel_size=5, stride=2, padding=2, bias=False)  # 128 -> 64
@@ -124,17 +124,35 @@ class ResNet3D(nn.Module):
         self.layer1 = self._make_layer(block, 64, layers[0])
         self.layer2 = self._make_layer(block, 128, layers[1], stride=2)    # 32 -> 16
         self.layer3 = self._make_layer(block, 256, layers[2], stride=2)    # 16 -> 8
-        self.layer4 = self._make_layer(block, 512, layers[3], stride=2)    # 8 -> 4
+
+        assert N_features in [1024, 2048], 'N_features should be 1024 or 2048'
+        self.N_features = N_features    
+        if self.N_features == 2048:
+            self.layer4 = self._make_layer(block, 512, layers[3], stride=2)    # 8 -> 4
+
+        # self.layer5 = self._make_layer(block, 256, layers[3], stride=2)    # 4 -> 2
 
         if grid_step is None:
             grid_step = 1/128
 
-        if grid_step >= 1/128 - 1/512:
+        if grid_step >= 1/64 - 1/512:
+            print('grid_size == 1/64')
+            if self.N_features == 2048:
+                self.avgpool = nn.AvgPool3d(2, stride=1)
+            else:
+                self.avgpool = nn.AvgPool3d(4, stride=1)
+        elif grid_step >= 1/128 - 1/512:
             print('grid_size == 1/128')
-            self.avgpool = nn.AvgPool3d(4, stride=1) # grid 1/100
-        else: 
+            if self.N_features == 2048:
+                self.avgpool = nn.AvgPool3d(4, stride=1)
+            else:
+                self.avgpool = nn.AvgPool3d(8, stride=1)
+        else:
             print('grid_size == 1/256')
-            self.avgpool = nn.AvgPool3d(8, stride=1)
+            if self.N_features == 2048:
+                self.avgpool = nn.AvgPool3d(8, stride=1)
+            else:
+                self.avgpool = nn.AvgPool3d(16, stride=1)
         '''
         self.fc = nn.Linear(512 * block.expansion, num_classes)
         '''
@@ -172,67 +190,74 @@ class ResNet3D(nn.Module):
         c2 = self.layer1(c2)  # 32 --> 16 anchor_area
         c3 = self.layer2(c2)  # 16 --> 32 anchor_area
         c4 = self.layer3(c3)  # 8
-        c5 = self.layer4(c4)  # 4
-
-        out = self.avgpool(c5)
+        if self.N_features == 2048:
+            c5 = self.layer4(c4) # 4
+            out = self.avgpool(c5)
+        else: 
+            # 1024 features
+            out = self.avgpool(c4)
+        
+        # c6 = self.layer5(c5)  # 4
         return out
         '''
         x = x.view(x.size(0), -1)
         x = self.fc(x)
         '''
+        # return c1, c2, c3, c4, c5, c6
+        # return c1, c2, c3, c4, c5
 
 
-def resnet18(in_channels=3, pretrained=False, grid_step=None, **kwargs):
+def resnet18(in_channels=3, pretrained=False, grid_step=None,N_features=None, **kwargs):
     """Constructs a ResNet-18 model.
     Args:
         pretrained (bool): If True, returns a model pre-trained on ImageNet
     """
-    model = ResNet3D(in_channels, BasicBlock, [2, 2, 2, 2], grid_step=grid_step, **kwargs)
+    model = ResNet3D(in_channels, BasicBlock, [2, 2, 2, 2], grid_step=grid_step, N_features=N_features, **kwargs)
     # if pretrained:
     #     model.load_state_dict(model_zoo.load_url(model_urls['resnet18']))
     return model
 
 
-def resnet34(in_channels=3, pretrained=False, grid_step=None, **kwargs):
+def resnet34(in_channels=3, pretrained=False, grid_step=None, N_features=None, **kwargs):
     """Constructs a ResNet-34 model.
     Args:
         pretrained (bool): If True, returns a model pre-trained on ImageNet
     """
-    model = ResNet3D(in_channels, BasicBlock, [3, 4, 6, 3], grid_step=grid_step, **kwargs)
+    model = ResNet3D(in_channels, BasicBlock, [3, 4, 6, 3], grid_step=grid_step,N_features=N_features, **kwargs)
     # if pretrained:
     #     model.load_state_dict(model_zoo.load_url(model_urls['resnet34']))
     return model
 
 
-def resnet50(in_channels=3, pretrained=False, grid_step=None, **kwargs):
+def resnet50(in_channels=3, pretrained=False, grid_step=None, N_features=None, **kwargs):
     """Constructs a ResNet-50 model.
     Args:
         pretrained (bool): If True, returns a model pre-trained on ImageNet
     """
-    model = ResNet3D(in_channels, Bottleneck, [3, 4, 6, 3], grid_step=grid_step, **kwargs)
+    model = ResNet3D(in_channels, Bottleneck, [3, 4, 6, 3], grid_step=grid_step,N_features=N_features, **kwargs)
     if pretrained:
         print('Pre-trained')
         model.load_state_dict(torch.utils.model_zoo.load_url(model_urls['resnet50']))
     return model
 
 
-def resnet101(in_channels=3, pretrained=False, grid_step=None, **kwargs):
+def resnet101(in_channels=3, pretrained=False, grid_step=None, N_features=None, **kwargs):
     """Constructs a ResNet-101 model.
     Args:
         pretrained (bool): If True, returns a model pre-trained on ImageNet
     """
-    model = ResNet3D(in_channels, Bottleneck, [3, 4, 23, 3], grid_step = grid_step, **kwargs)
+    model = ResNet3D(in_channels, Bottleneck, [3, 4, 23, 3], grid_step = grid_step, N_features=N_features, **kwargs)
     # if pretrained:
     #     model.load_state_dict(model_zoo.load_url(model_urls['resnet101']))
     return model
 
 
-def resnet152(in_channels=3, pretrained=False, grid_step = None, **kwargs):
+def resnet152(in_channels=3, pretrained=False, grid_step = None, N_features=None, **kwargs):
     """Constructs a ResNet-152 model.
     Args:
         pretrained (bool): If True, returns a model pre-trained on ImageNet
     """
-    model = ResNet3D(in_channels, Bottleneck, [3, 8, 36, 3], grid_step = grid_step, **kwargs)
+    model = ResNet3D(in_channels, Bottleneck, [3, 8, 36, 3], grid_step = grid_step, N_features=N_features,  **kwargs)
     # if pretrained:
     #     model.load_state_dict(model_zoo.load_url(model_urls['resnet152']))
     return model
@@ -246,13 +271,14 @@ class ResNet3D_helper(nn.Module):
             'resnet101': resnet101,
             'resnet152': resnet152
         }
-    def __init__(self, in_channels=3, backbone='resnet50', pretrained=False, grid_step=None):
+    def __init__(self, in_channels=3, backbone='resnet50', pretrained=False, grid_step=None, N_features=1024):
         super(ResNet3D_helper, self).__init__()
 
         self.backbone_net = ResNet3D_helper.backbones[backbone](
             in_channels=in_channels,
             pretrained=pretrained,
-            grid_step=grid_step
+            grid_step=grid_step, 
+            N_features=N_features
         )	
 
     def forward(self, x):

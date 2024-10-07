@@ -4,11 +4,12 @@ NeRAF Config
 
 from __future__ import annotations
 
-from NeRAF.NeRAF_pipeline import NeRAFPipelineConfig,NeRAFPipeline
+from NeRAF.NeRAF_pipeline import NeRAFPipelineConfig, NeRAFPipeline
 
 from NeRAF.NeRAF_model import NeRAFVisionModelConfig, NeRAFAudioModelConfig
 
-from NeRAF.NeRAF_datamanager import NeRAFDataManagerConfig
+from NeRAF.NeRAF_dataparser import SoundSpacesDataParserConfig, RAFDataParserConfig
+from NeRAF.NeRAF_datamanager import SoundSpacesDataManagerConfig, RAFDataManagerConfig
 
 
 from nerfstudio.configs.base_config import ViewerConfig
@@ -28,61 +29,84 @@ from nerfstudio.pipelines.base_pipeline import VanillaPipelineConfig
 from pathlib import Path
 import os 
 
-start_step_audio = 2000 # number of iterations NeRF has been trained before starting audio training
-fs = 22050
+# Parameters to change for each experiment ----
+dataset = 'RAF' # or 'SoundSpaces'
+scene = 'FurnishedRoom'
 
-# Parameters to change for each experiment --
-experiment_name= "office4_NeRAF"
+if "NeRAF_dataset" in os.environ:
+    dataset = os.environ["NeRAF_dataset"]
+if "NeRAF_scene" in os.environ:
+    scene = os.environ["NeRAF_scene"]
+
+if dataset == 'SoundSpaces':
+    fs = 22050
+    max_len_SoundSpaces = {'office_4': 78, 'room_2': 84, 'frl_apartment_2': 107, 'frl_apartment_4': 103, 'apartment_2': 86, 'apartment_1': 101}
+    max_len = max_len_SoundSpaces[scene]
+    base_dir = '../data/SoundSpaces'
+    eval_mode_vision = 'filename'
+    datamanager = SoundSpacesDataManagerConfig(train_num_rays_per_batch=2048,
+            eval_num_rays_per_batch=2048,
+            fs=fs,
+            max_len=max_len,
+            dataparser=SoundSpacesDataParserConfig())
+else:
+    fs = 48000
+    max_len = 0.32 
+    base_dir = '../data/RAF'
+    eval_mode_vision = 'fraction'
+    datamanager = RAFDataManagerConfig(train_num_rays_per_batch=2048,
+            eval_num_rays_per_batch=2048,
+            fs=fs,
+            max_len=max_len,
+            dataparser=RAFDataParserConfig())
+
+experiment_name= scene + '_NeRAF'
 output_dir = "./outputs" # path to save checkpoints and logs
 eval_save_dir = None # give path to save rendered eval STFT (visualization)
-# office4: 78, room2: 84, frl apt 2: 107, frl apt 4: 103, apt 2: 86, apt 1: 101
-max_len = 78
-# --
+start_step_audio = 2000 # number of iterations NeRF has been trained before starting audio training
+# ----
  
 NeRAF_method = MethodSpecification(
     config=TrainerConfig(
     method_name="NeRAF",
     experiment_name=experiment_name, 
-    steps_per_eval_batch=5000,
-    steps_per_eval_image=5000,
-    steps_per_eval_all_images=25000,
-    steps_per_save=25000,
-    save_only_latest_checkpoint=True,
-    max_num_iterations=500001,
+    steps_per_eval_batch=10000,
+    steps_per_eval_image=10000,
+    steps_per_eval_all_images=10000,
+    steps_per_save=20000,
+    save_only_latest_checkpoint=False,
+    max_num_iterations=400001,
     mixed_precision=True,
-    data=Path('./data/Replica/office_4'), # to be changed depending of the scene
+    data=Path(os.path.join(base_dir, scene)), 
     output_dir=Path(output_dir),
     pipeline=NeRAFPipelineConfig(
         datamanager=ParallelDataManagerConfig(
             dataparser=NerfstudioDataParserConfig(
-                eval_mode="filename",
+                eval_mode=eval_mode_vision,
             ),
             train_num_rays_per_batch=4096,
             eval_num_rays_per_batch=4096,
             images_on_gpu=True,
             masks_on_gpu=True,
         ),
-        audio_datamanager=NeRAFDataManagerConfig(
-            train_num_rays_per_batch=2048,
-            eval_num_rays_per_batch=2048,
-            fs=fs,
-            max_len=max_len,
-            # hop_len=128,
-        ),
+        audio_datamanager=datamanager,
+
         vision_model=NeRAFVisionModelConfig(
             eval_num_rays_per_chunk=1 << 15,
             average_init_density=0.01,
             camera_optimizer=CameraOptimizerConfig(mode="SO3xR3"),
         ),
         audio_model=NeRAFAudioModelConfig(
+            dataset=dataset,
             use_grid=True,
             grid_step=1/128,
+            N_features=1024, 
             use_multiple_viewing_directions=True,
-            loss_factor=1e-3,
+            loss_factor=1e-3, # weight the audio loss
             W_field=512,
             N_freq_stft=257,
             fs = fs,
-            criterion="SC+SLMSE",
+            criterion="SC+SLMSE", # or SC+SLL1
             max_len=max_len,
         ),
         start_step_audio=start_step_audio,

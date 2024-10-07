@@ -26,8 +26,6 @@ from nerfstudio.models.base_model import Model, ModelConfig
 from nerfstudio.utils import profiler
 from nerfstudio.field_components.field_heads import FieldHeadNames
 
-# from method_template.template_datamanager import TemplateDataManagerConfig
-# from method_template.template_model import TemplateModel, TemplateModelConfig
 from nerfstudio.data.datamanagers.base_datamanager import (
     DataManager,
     DataManagerConfig,
@@ -135,17 +133,18 @@ class NeRAFPipeline(VanillaPipeline):
         self.model.to(device)
 
         self.audio_model = config.audio_model.setup(
-            scene_box=self.datamanager.train_dataset.scene_box,
+            scene_box=self.audio_datamanager.train_dataset.scene_box,
             num_train_data=len(self.audio_datamanager.train_dataset),
             device=device,
         )
+
         # Retrieve spatial distortion from vision model for grid sampling
+        print('Givin SD to audio model')
         self.audio_model.spatial_distortion = self.model.field.module.spatial_distortion
 
         self.audio_model.to(device)
 
-        # For debug only, to be changed later to accomodate viewer camera
-        self.audio_model.set_eval_data(self.audio_datamanager.test_dataset[3][0], self.audio_datamanager.test_dataset[2][0], self.audio_datamanager.test_dataset[1][0], self.audio_datamanager.test_dataset[0][0])
+        self.audio_model.set_eval_data(self.audio_datamanager.eval_dataset[0]['source_pose'], self.audio_datamanager.eval_dataset[0]['mic_pose'], self.audio_datamanager.eval_dataset[0]['rot'], self.audio_datamanager.eval_dataset[0]['data'])
 
         # Give to vision model the audio model for viewer
         self.model.audio_model = self.audio_model
@@ -178,10 +177,11 @@ class NeRAFPipeline(VanillaPipeline):
         metrics_dict = self.model.get_metrics_dict(model_outputs, batch)
         loss_dict = self.model.get_loss_dict(model_outputs, batch, metrics_dict)
 
-        # updating a batch of the grid
-        self.audio_model.query_grid_one_batch(self.model.field,
-                                              renderer_rgb = self.model.renderer_rgb,
-                                              batch_size=self.config.datamanager.train_num_rays_per_batch)
+        #updating a part of the grid
+        if self.config.audio_model.use_grid:
+            self.audio_model.query_grid_one_batch(step, self.model.field,
+                                                renderer_rgb = self.model.renderer_rgb,
+                                                batch_size=self.config.datamanager.train_num_rays_per_batch)
 
         if step > self.start_step_audio:
             _, batch_audio = self.audio_datamanager.next_train(step) # we don't need ray_bundle for audio model
@@ -189,6 +189,7 @@ class NeRAFPipeline(VanillaPipeline):
             # metrics_audio_dict = self.audio_model.get_metrics_dict(model_audio_outputs, batch_audio)
             metrics_audio_dict = {}  # we don't compute metrics for training to speedup
             loss_audio_dict = self.audio_model.get_loss_dict(model_audio_outputs, batch_audio, metrics_audio_dict)
+
 
             # we merge the loss and metrics dict
             for key in loss_audio_dict:
@@ -198,7 +199,7 @@ class NeRAFPipeline(VanillaPipeline):
                 metrics_dict[key] = metrics_audio_dict[key]
 
         return model_outputs, loss_dict, metrics_dict
-
+    
     def forward(self):
         """Blank forward method
 
@@ -285,7 +286,9 @@ class NeRAFPipeline(VanillaPipeline):
         metrics_dict_audio_list = []
         assert isinstance(self.datamanager, (VanillaDataManager, ParallelDataManager, FullImageDatamanager))
         num_images = len(self.datamanager.fixed_indices_eval_dataloader)
-        num_stft = len(self.audio_datamanager.test_dataset[0])
+        if self.audio_datamanager.eval_dataset.mode != "inference":
+            self.audio_datamanager.eval_dataset.mode = 'eval_image' 
+        num_stft = len(self.audio_datamanager.eval_dataset)
         nb_im = 0
 
         with Progress(
@@ -324,7 +327,6 @@ class NeRAFPipeline(VanillaPipeline):
             # evaluate audio
             if output_path is not None: 
                 step = self.start_step_audio + 1
-
             if step > self.start_step_audio:
                 task = progress.add_task("[green]Evaluating all eval stft...", total=num_stft)
                 output_eval = []
@@ -334,12 +336,7 @@ class NeRAFPipeline(VanillaPipeline):
                     inner_start = time()
 
                     #should be done in datamanager...
-                    data = self.audio_datamanager.test_dataset[0][i]
-                    rot = self.audio_datamanager.test_dataset[1][i]
-                    mic_pose = self.audio_datamanager.test_dataset[2][i]
-                    source_pose = self.audio_datamanager.test_dataset[3][i]
-                    gt_waveform = self.audio_datamanager.test_waveform[i]
-                    batch = {'rot': rot, 'mic_pose': mic_pose, 'source_pose': source_pose, 'data': data, 'waveform': gt_waveform}
+                    batch = self.audio_datamanager.eval_dataset[i]
 
                     outputs = self.audio_model.get_outputs_for_camera(None,None,batch_audio=batch)
                     
@@ -349,18 +346,19 @@ class NeRAFPipeline(VanillaPipeline):
                         #save stft
                         batch_output = batch
                         batch_output["pred"] = outputs["raw_output"].detach().cpu().numpy()
-                        output_eval.append(batch_output)
+                        if not os.path.exists(os.path.join(self.save_eval_audio_path, str(step))):
+                            os.makedirs(os.path.join(self.save_eval_audio_path, str(step)))
+                        np.save(os.path.join(self.save_eval_audio_path, str(step), f"eval_{i}.npy"), batch_output)        
 
                     if output_path is not None:
                         audio2save = outputs['raw_output'].permute(1,2,0).detach().cpu().numpy()
-                        # save pred STFT
+                        # save as a wav file 
                         str_nb_stft = str(nb_stft).zfill(5)
                         audio_path = os.path.join(output_path, f"eval_{str_nb_stft}.npy")
                         np.save(audio_path, audio2save)
                         nb_stft += 1
-                        # raise NotImplementedError("Saving images is not implemented yet")
 
-                    num_rays = data.shape[-1]
+                    num_rays = batch['data'].shape[-1]
                     assert "num_rays_per_sec_audio" not in metrics_dict
                     metrics_dict["num_rays_per_sec_audio"] = (num_rays / (time() - inner_start))
                     fps_str = "fps_audio"
@@ -375,14 +373,10 @@ class NeRAFPipeline(VanillaPipeline):
 
                     metrics_dict_audio_list.append(metrics_dict)
                     progress.advance(task)
-    
-                if self.save_eval_audio_path is not None:
-                    if not os.path.exists(self.save_eval_audio_path):
-                        os.makedirs(self.save_eval_audio_path)
-                    np.save(os.path.join(self.save_eval_audio_path,  f"eval_{step}.npy"), output_eval)
-                    del output_eval
-
-                    
+                
+                if self.audio_datamanager.eval_dataset.mode != "inference":
+                    self.audio_datamanager.eval_dataset.mode = 'eval'
+   
                 
         # average the metrics list
         metrics_dict = {}
@@ -443,7 +437,7 @@ class NeRAFPipeline(VanillaPipeline):
         self.audio_model.spatial_distortion = self.model.field.module.spatial_distortion
 
         # For debug, to be changed later to accomodate viewer camera
-        self.audio_model.set_eval_data(self.audio_datamanager.test_dataset[3][0], self.audio_datamanager.test_dataset[2][0], self.audio_datamanager.test_dataset[1][0], self.audio_datamanager.test_dataset[0][0])
+        self.audio_model.set_eval_data(self.audio_datamanager.eval_dataset[0]['source_pose'], self.audio_datamanager.eval_dataset[0]['mic_pose'], self.audio_datamanager.eval_dataset[0]['rot'], self.audio_datamanager.eval_dataset[0]['data'])
 
         # Give to vision model the audio model for viewer output
         self.model.audio_model = self.audio_model
