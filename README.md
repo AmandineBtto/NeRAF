@@ -4,7 +4,7 @@ NeRAF is a novel method that learns neural radiance and acoustic field.
 
 [Paper](https://arxiv.org/abs/2405.18213) | [Project Page](https://amandinebtto.github.io/NeRAF)
 
-## EDIT: New code version. Now supporting RAF dataset. Weights examples to be added soon.
+## EDIT: New code version. Now supporting RAF dataset. We provide more details on data. Weights examples to be added soon.
 
 ## File Structure
 ```
@@ -21,6 +21,9 @@ NeRAF is a novel method that learns neural radiance and acoustic field.
 │   ├── NeRAF_resnet3d.py
 │   ├── NeRAF_evaluator.py
 ├── pyproject.toml
+├── data
+│   ├── RAF
+│   ├── SoundSpaces
 ```
 
 ## Requirements 
