@@ -139,7 +139,7 @@ class NeRAFPipeline(VanillaPipeline):
         )
 
         # Retrieve spatial distortion from vision model for grid sampling
-        print('Givin SD to audio model')
+        #print('Givin SD to audio model')
         self.audio_model.spatial_distortion = self.model.field.module.spatial_distortion
 
         self.audio_model.to(device)

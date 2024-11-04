@@ -4,7 +4,7 @@ NeRAF is a novel method that learns neural radiance and acoustic field.
 
 [Paper](https://arxiv.org/abs/2405.18213) | [Project Page](https://amandinebtto.github.io/NeRAF)
 
-## EDIT: New code version. Now supporting RAF dataset. We provide more details on data. Weights examples to be added soon.
+## EDIT: New code version! Now supporting RAF dataset. We provide more details on data + weights.
 
 ## File Structure
 ```
@@ -54,13 +54,17 @@ To train the models, run the command:
 NeRAF_dataset=RAF NeRAF_scene=FurnishedRoom ns-train NeRAF 
 ```
 
-## Evaluation
-To evaluate my model on eval set, run the following command:
+## Evaluation & Weights
+We provide the [weights](https://univpsl-my.sharepoint.com/:f:/g/personal/amandine_brunetto_minesparis_psl_eu/EnBwmOmNIUxNiTwKT_-eKhwBhtIlk5z5v6yWPXjCmnjsLw?e=CbQGZL) of the model for every scene in RAF and SoundSpaces datasets.
+Note that if you train NeRAF from scratch you may obtain slightly different performances as the training is non-deterministic. This is why we averaged results on multiple runs in the paper. 
+
+To evaluate the model on eval set, run the following command:
 ```
-ns-eval --load-config [CONFIG_PATH] --output-path [OUTPUT_PATH] --render-output-path [RENDER_OUTPUT_PATH]
+ns-eval --load-config [CONFIG_PATH to config.yml] --output-path [OUTPUT_PATH to out_name.json] --render-output-path [RENDER_OUTPUT_PATH to folder conainting rendered images and audio in the eval set]
 ```
 More informations are provided in Nerfstudio documentation. 
-ns-eval will save rendered images and audio in the output path.
+
+ns-eval will save rendered images and audio in the render output path and give averaged metrics in the output path. 
 
 
 ## Resume training 
