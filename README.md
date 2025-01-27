@@ -1,10 +1,12 @@
-# NeRAF
-This repository is the official implementation of NeRAF: 3D Scene Infused Neural Radiance and Acoustic Field.
+# NeRAF: 3D Scene Infused Neural Radiance and Acoustic Fields [Accepted at ICLR 2025]
+
+<p align="center" style="margin: 2em auto;">
+    <a href='https://amandinebtto.github.io/NeRAF' style='padding-left: 0.5rem;'><img src='https://img.shields.io/badge/NeRAF-Project_page-orange?style=flat&logo=github&logoColor=orange' alt='Project Page'></a>
+    <a href='https://arxiv.org/abs/2405.18213'><img src='https://img.shields.io/badge/arXiv-Paper-red?style=flat&logo=arXiv&logoColor=green' alt='Paper'></a>
+</p>
+
+This repository is the official implementation of NeRAF: 3D Scene Infused Neural Radiance and Acoustic Fields.
 NeRAF is a novel method that learns neural radiance and acoustic field. 
-
-[Paper](https://arxiv.org/abs/2405.18213) | [Project Page](https://amandinebtto.github.io/NeRAF)
-
-## EDIT: New code version! Now supporting RAF dataset. We provide more details on data + weights.
 
 ## File Structure
 ```
@@ -73,6 +75,18 @@ To resume training, run the following command:
 ns-train NeRAF --load-dir [MODEL_PATH]
 ```
 More informations are provided in Nerfstudio documentation. 
+
+## Citation 
+If you find this repository useful in your research, please consider giving a star and cite our paper by using the following: 
+
+```
+@article{brunetto2024neraf,
+  title={NeRAF: 3D Scene Infused Neural Radiance and Acoustic Fields},
+  author={Brunetto, Amandine and Hornauer, Sascha and Moutarde, Fabien},
+  journal={arXiv preprint arXiv:2405.18213},
+  year={2024}
+}
+```
 
 ## License
 Shield: [![CC BY-NC-SA 4.0][cc-by-nc-sa-shield]][cc-by-nc-sa]
