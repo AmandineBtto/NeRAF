@@ -40,11 +40,12 @@ ns-install-cli
 ```
 
 ### Additional packages
+Following nerfstudio recommandations we use pytorch 2.1.2+cu11.8 and tinycudann 1.7.
 Additional audio related packages must be added to the conda environment.
-- librosa 
-- pyroomacoustics
-- torchaudio
-- scipy
+- librosa 0.10.1
+- pyroomacoustics 0.7.3
+- torchaudio (should fit torch version, 2.1.2)
+- scipy 1.10.1
 
 ## Training
 This code creates a new Nerfstudio method named "NeRAF-method". 
