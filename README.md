@@ -81,11 +81,13 @@ More informations are provided in Nerfstudio documentation.
 If you find this repository useful in your research, please consider giving a star and cite our paper by using the following: 
 
 ```
-@article{brunetto2024neraf,
-  title={NeRAF: 3D Scene Infused Neural Radiance and Acoustic Fields},
-  author={Brunetto, Amandine and Hornauer, Sascha and Moutarde, Fabien},
-  journal={arXiv preprint arXiv:2405.18213},
-  year={2024}
+@inproceedings{
+brunetto2025neraf,
+title={Ne{RAF}: 3D Scene Infused Neural Radiance and Acoustic Fields},
+author={Amandine Brunetto and Sascha Hornauer and Fabien Moutarde},
+booktitle={The Thirteenth International Conference on Learning Representations},
+year={2025},
+url={https://openreview.net/forum?id=njvSBvtiwp}
 }
 ```
 
