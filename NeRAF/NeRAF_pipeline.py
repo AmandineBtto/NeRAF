@@ -198,6 +198,27 @@ class NeRAFPipeline(VanillaPipeline):
             for key in metrics_audio_dict:
                 metrics_dict[key] = metrics_audio_dict[key]
 
+            ### CHECK Gradients
+            # for param in self.model.parameters():
+            #     if param.grad is not None:
+            #         print(param.grad.norm()) # check vision model gradient
+                    
+            #     else:
+            #         print("no grad for vision model")
+
+            # test_loss = loss_audio_dict['audio_sc_loss'] + loss_audio_dict['audio_mag_loss']
+            # test_loss.backward()
+
+            # for param in self.model.parameters():
+            #     if param.grad is not None:
+            #         print(param.grad.norm()) # check vision model gradient
+                    
+            #     else:
+            #         print("no grad for vision model")
+
+            # exit()
+            ####
+
         return model_outputs, loss_dict, metrics_dict
     
     def forward(self):
