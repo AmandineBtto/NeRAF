@@ -1,8 +1,9 @@
-# NeRAF: 3D Scene Infused Neural Radiance and Acoustic Fields [Accepted at ICLR 2025]
+# NeRAF: 3D Scene Infused Neural Radiance and Acoustic Fields [ICLR 2025]
 
 <p align="center" style="margin: 2em auto;">
     <a href='https://amandinebtto.github.io/NeRAF' style='padding-left: 0.5rem;'><img src='https://img.shields.io/badge/NeRAF-Project_page-orange?style=flat&logo=github&logoColor=orange' alt='Project Page'></a>
     <a href='https://arxiv.org/abs/2405.18213'><img src='https://img.shields.io/badge/arXiv-Paper-red?style=flat&logo=arXiv&logoColor=green' alt='Paper'></a>
+    <a href="https://huggingface.co/AmandineBtto/NeRAF" target="_blank"><img src="https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Weights-blue" alt="Weights"></a>
 </p>
 
 This repository is the official implementation of NeRAF: 3D Scene Infused Neural Radiance and Acoustic Fields.
@@ -26,6 +27,7 @@ NeRAF is a novel method that learns neural radiance and acoustic field.
 ├── data
 │   ├── RAF
 │   ├── SoundSpaces
+├── viz
 ```
 
 ## Requirements 
@@ -58,7 +60,7 @@ NeRAF_dataset=RAF NeRAF_scene=FurnishedRoom ns-train NeRAF
 ```
 
 ## Evaluation & Weights
-We provide the [weights](https://univpsl-my.sharepoint.com/:f:/g/personal/amandine_brunetto_minesparis_psl_eu/EnBwmOmNIUxNiTwKT_-eKhwBhtIlk5z5v6yWPXjCmnjsLw?e=CbQGZL) of the model for every scene in RAF and SoundSpaces datasets.
+We provide the [weights](https://huggingface.co/AmandineBtto/NeRAF) of the model for every scene in RAF and SoundSpaces datasets.
 Note that if you train NeRAF from scratch you may obtain slightly different performances as the training is non-deterministic. This is why we averaged results on multiple runs in the paper. 
 
 To evaluate the model on eval set, run the following command:
